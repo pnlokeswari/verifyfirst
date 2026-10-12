@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NMLPWQS06F"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NMLPWQS06F');
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Cetaphil Gentle Skin Hydrating Face Wash 118ml, Paraben Free, Sulphate-Free... — Amazon vs Flipkart Price Comparison, Box MRP &amp; 90-Day Price History | VerifyFirst</title>
@@ -319,6 +328,25 @@
         vid: vid
       })
     }).catch(function(){});
+
+    // Track Price Audit & Store Buy clicks in Google Analytics 4
+    document.addEventListener('click', function(e) {
+      if (typeof gtag !== 'function') return;
+      var auditBtn = e.target.closest('#btn-audit, .sample-chip');
+      if (auditBtn) {
+        var inp = document.getElementById('audit-input');
+        gtag('event', 'price_audit_search', {
+          search_term: (inp && inp.value) ? inp.value.slice(0, 100) : auditBtn.textContent.trim()
+        });
+      }
+      var buyBtn = e.target.closest('.btn-store-buy, .btn-buy');
+      if (buyBtn) {
+        gtag('event', 'store_buy_click', {
+          link_url: buyBtn.href || '',
+          store_type: buyBtn.classList.contains('flipkart') ? 'Flipkart' : 'Amazon'
+        });
+      }
+    });
   } catch (e) {}
 })();
 </script>
