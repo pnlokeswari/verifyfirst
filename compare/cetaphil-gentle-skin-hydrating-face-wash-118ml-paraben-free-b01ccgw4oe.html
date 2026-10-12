@@ -284,37 +284,7 @@
   </div>
 </div>
 
-<!-- VerifyFirst Live Visitor & Monthly Goal Tracker -->
-<div id="vf-live-visitor-pill" style="max-width:980px;margin:18px auto 12px;padding:0 16px;">
-  <div style="background:rgba(13,21,44,0.92);border:1px solid rgba(56,189,248,0.28);border-radius:14px;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,0.28);">
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-      <span style="display:inline-flex;align-items:center;gap:6px;background:rgba(16,185,129,0.14);border:1px solid rgba(16,185,129,0.35);color:#34d399;font-size:0.74rem;font-weight:800;padding:4px 10px;border-radius:99px;">
-        <span style="width:7px;height:7px;border-radius:50%;background:#10b981;box-shadow:0 0 8px #10b981;display:inline-block;"></span>
-        LIVE TRAFFIC
-      </span>
-      <span style="font-size:0.84rem;color:#e2e8f0;font-weight:600;">
-        👥 <strong id="vf-vis-month" style="color:#38bdf8;">--</strong> Visitors This Month
-      </span>
-      <span style="color:#475569;">•</span>
-      <span style="font-size:0.84rem;color:#e2e8f0;font-weight:600;">
-        👁️ <strong id="vf-vis-views" style="color:#fbbf24;">--</strong> Pageviews
-      </span>
-      <span style="color:#475569;">•</span>
-      <span style="font-size:0.84rem;color:#e2e8f0;font-weight:600;">
-        ⚡ <strong id="vf-vis-audits" style="color:#34d399;">--</strong> Price Audits
-      </span>
-    </div>
-    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-      <div style="display:flex;align-items:center;gap:8px;" title="Monthly Visibility Target: 500 Visitors">
-        <span style="font-size:0.74rem;color:#94a3b8;font-weight:700;">Monthly Goal (<span id="vf-vis-goal-txt">0/500</span>):</span>
-        <div style="width:90px;height:7px;background:#091024;border-radius:99px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);">
-          <div id="vf-vis-goal-bar" style="width:2%;height:100%;background:linear-gradient(90deg,#10b981,#38bdf8);border-radius:99px;transition:width 0.4s;"></div>
-        </div>
-      </div>
-      <a href="/analytics.html" style="font-size:0.74rem;font-weight:700;color:#38bdf8;text-decoration:none;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);padding:4px 10px;border-radius:8px;">📊 Live Stats ↗</a>
-    </div>
-  </div>
-</div>
+<!-- VerifyFirst Silent Background Analytics Ping (Owner-Only Reporting) -->
 <script>
 (function(){
   try {
@@ -335,50 +305,20 @@
     var uvAction = isNewUniqueToday ? '/up' : '';
     var uvUrl = 'https://api.counterapi.dev/v1/verifyfirst_co_in/visitors_' + monthKey + uvAction;
 
-    function renderCounts(uv, pv, audits) {
-      var elM = document.getElementById('vf-vis-month');
-      var elV = document.getElementById('vf-vis-views');
-      var elA = document.getElementById('vf-vis-audits');
-      var elG = document.getElementById('vf-vis-goal-txt');
-      var elB = document.getElementById('vf-vis-goal-bar');
-      if (elM && uv !== null) elM.textContent = Number(uv).toLocaleString('en-IN');
-      if (elV && pv !== null) elV.textContent = Number(pv).toLocaleString('en-IN');
-      if (elA && audits !== null) elA.textContent = Number(audits).toLocaleString('en-IN');
-      if (elG && uv !== null) elG.textContent = uv + '/500';
-      if (elB && uv !== null) {
-        var pct = Math.min(100, Math.max(2, Math.round((uv / 500) * 100)));
-        elB.style.width = pct + '%';
-      }
+    fetch(pvUrl).catch(function(){});
+    if (isNewUniqueToday) {
+      fetch(uvUrl).catch(function(){});
     }
 
-    // 1. Fast Cloud Counter (persists permanently across Render container restarts)
-    Promise.all([
-      fetch(pvUrl).then(function(r){ return r.ok ? r.json() : {count: 1}; }).catch(function(){ return {count: 1}; }),
-      fetch(uvUrl).then(function(r){ return r.ok ? r.json() : {count: 1}; }).catch(function(){ return {count: 1}; })
-    ]).then(function(res){
-      var pv = (res[0] && res[0].count) ? res[0].count : 1;
-      var uv = (res[1] && res[1].count) ? res[1].count : 1;
-      if (uv > pv) uv = pv;
-      renderCounts(uv, pv, Math.max(12, Math.round(pv * 0.65)));
-
-      // 2. Also ping Render backend for live SQLite audit logs & referrer tracking
-      fetch('https://zero483-deals-api.onrender.com/api/visitor-ping', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          path: window.location.pathname + window.location.search,
-          ref: document.referrer || 'Direct',
-          vid: vid
-        })
-      }).then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
-        if (d) {
-          var bestUv = Math.max(uv, d.visitors_month || 1);
-          var bestPv = Math.max(pv, d.pageviews_month || 1);
-          var bestAudits = Math.max(12, d.total_audits || 0);
-          renderCounts(bestUv, bestPv, bestAudits);
-        }
-      }).catch(function(){});
-    });
+    fetch('https://zero483-deals-api.onrender.com/api/visitor-ping', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        path: window.location.pathname + window.location.search,
+        ref: document.referrer || 'Direct',
+        vid: vid
+      })
+    }).catch(function(){});
   } catch (e) {}
 })();
 </script>
