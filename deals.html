@@ -1321,6 +1321,7 @@ async function runAudit(competitorUrl = '') {
     }
 
     lastAuditedItem = d;
+    updateCommunityShareLinks(currentLang);
     const v = getLocalizedVerdict(d, currentLang);
 
     const amz = d.amazon_counterpart || {};
@@ -1574,6 +1575,9 @@ async function runAudit(competitorUrl = '') {
               </a>
               <button onclick="copyDealSummary()" class="btn-deal-copy" id="dyn-btn-copy-summary" title="Copy full comparison summary to clipboard">
                 📋 Copy Comparison Summary
+              </button>
+              <button onclick="handleNativeShare()" class="btn-deal-copy" title="Share comparison via Telegram, Instagram, Twitter, SMS, or any app">
+                📲 Share via Any App
               </button>
             </div>
 
@@ -2235,17 +2239,18 @@ function fallbackCopyText(text) {
 
 function updateCommunityShareLinks(lang) {
   const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  const shareText = lastAuditedItem ? getDealShareText(lastAuditedItem, lang) : dict.community_share_text;
   const wa = document.getElementById('share-whatsapp-link');
   if (wa) {
-    wa.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(dict.community_share_text);
+    wa.href = "https://api.whatsapp.com/send?text=" + encodeURIComponent(shareText);
   }
   const tw = document.getElementById('share-twitter-link');
   if (tw) {
-    tw.href = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(dict.community_share_text) + "&hashtags=AmazonDeals,SmartShopping,VERIFYFIRST";
+    tw.href = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText) + "&hashtags=AmazonVsFlipkart,SmartShopping,VerifyFirst";
   }
   const fb = document.getElementById('share-facebook-link');
   if (fb) {
-    fb.href = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent("https://verifyfirst.co.in/");
+    fb.href = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent("https://verifyfirst.co.in/") + "&quote=" + encodeURIComponent(shareText);
   }
 }
 
@@ -2447,25 +2452,25 @@ function handleBookmark() {
 
 function copyInstagramLink() {
   const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
-  const url = "https://verifyfirst.co.in/";
+  const textToCopy = lastAuditedItem ? getDealShareText(lastAuditedItem, currentLang) : dict.community_share_text;
   const copyText = document.getElementById('copy-btn-text');
   if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(url).then(() => {
+    navigator.clipboard.writeText(textToCopy).then(() => {
       if (copyText) copyText.textContent = dict.toast_copied_btn;
       showToast(dict.toast_link_copied);
       setTimeout(() => {
         if (copyText) copyText.textContent = dict.btn_share_instagram;
       }, 3000);
-    }).catch(() => fallbackCopy(url, copyText));
+    }).catch(() => fallbackCopy(textToCopy, copyText));
   } else {
-    fallbackCopy(url, copyText);
+    fallbackCopy(textToCopy, copyText);
   }
 }
 
-function fallbackCopy(url, copyText) {
+function fallbackCopy(textToCopy, copyText) {
   const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
-  const input = document.createElement('input');
-  input.value = url;
+  const input = document.createElement('textarea');
+  input.value = textToCopy;
   document.body.appendChild(input);
   input.select();
   document.execCommand('copy');
@@ -2479,11 +2484,11 @@ function fallbackCopy(url, copyText) {
 
 function handleNativeShare() {
   const dict = TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+  const shareText = lastAuditedItem ? getDealShareText(lastAuditedItem, currentLang) : dict.community_share_text;
   if (navigator.share) {
     navigator.share({
-      title: 'VERIFYFIRST — Amazon Deal & Price Fluctuation Auditor',
-      text: dict.community_share_text,
-      url: 'https://verifyfirst.co.in/'
+      title: 'VerifyFirst Price Comparison — Amazon vs Flipkart',
+      text: shareText
     }).catch(() => {});
   } else {
     copyInstagramLink();
