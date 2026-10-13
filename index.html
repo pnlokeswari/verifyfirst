@@ -910,6 +910,25 @@ input,button,select,textarea{-webkit-appearance:none;appearance:none}
   /* Prevent iOS Safari from auto-zooming viewport on input focus (requires >=16px) */
   .auditor-input,.compare-input,#inline-comp-input,#manual-comp-input{font-size:16px !important}
 }
+
+/* In-App Browser (WhatsApp / Social) Notice Banner */
+.in-app-browser-banner{
+  background:linear-gradient(135deg,rgba(16,185,129,0.18),rgba(56,189,248,0.18));
+  border-bottom:1px solid rgba(56,189,248,0.35);
+  color:#f1f5f9;
+  padding:10px 16px;
+  font-size:.8rem;
+  display:none;
+  align-items:center;
+  gap:10px;
+  line-height:1.45;
+  position:relative;
+  z-index:999;
+}
+.in-app-browser-banner .in-app-icon{font-size:1.15rem;flex:none}
+.in-app-browser-banner .in-app-text{flex:1}
+.in-app-browser-banner .in-app-close{background:none;border:none;color:#94a3b8;font-size:1.3rem;cursor:pointer;padding:0 6px;line-height:1}
+.in-app-browser-banner .in-app-close:hover{color:#fff}
 </style>
 <link rel="canonical" href="https://verifyfirst.co.in/" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
@@ -956,6 +975,15 @@ input,button,select,textarea{-webkit-appearance:none;appearance:none}
 </script>
 </head>
 <body>
+
+<!-- In-App Browser (WhatsApp / Social Webview) Helper Banner -->
+<div id="in-app-browser-banner" class="in-app-browser-banner" style="display:none">
+  <span class="in-app-icon">💡</span>
+  <div class="in-app-text">
+    <strong>Viewing inside WhatsApp?</strong> For 1-tap Flipkart &amp; Amazon app checkout, tap <strong>⋮</strong> (or Safari compass icon) and select <strong>"Open in Chrome / Browser"</strong>.
+  </div>
+  <button type="button" class="in-app-close" onclick="document.getElementById('in-app-browser-banner').style.display='none'" aria-label="Dismiss">&times;</button>
+</div>
 
 <header>
   <div class="brand-title">
@@ -1264,6 +1292,69 @@ function toFlipkartAffiliateUrl(url) {
   return u;
 }
 
+function openStoreLink(rawUrl, platform) {
+  if (!rawUrl) return;
+  const url = (platform === 'flipkart') ? toFlipkartAffiliateUrl(rawUrl) : rawUrl;
+  const ua = navigator.userAgent || '';
+  const isAndroid = /Android/i.test(ua);
+  const isIOS = /iPhone|iPad|iPod/i.test(ua) && !window.MSStream;
+
+  if (isAndroid) {
+    const pkg = (platform === 'flipkart') ? 'com.flipkart.android' : 'in.amazon.mShop.android.shopping';
+    const clean = url.replace(/^https?:\/\//i, '');
+    const fallbackEncoded = encodeURIComponent(url);
+    const intentUrl = `intent://${clean}#Intent;scheme=https;package=${pkg};S.browser_fallback_url=${fallbackEncoded};end`;
+    window.location.href = intentUrl;
+    return;
+  }
+
+  if (isIOS) {
+    // For iOS: attempt native app scheme with graceful fallback to browser URL
+    let appUrl = '';
+    if (platform === 'flipkart') {
+      appUrl = url.replace(/^https?:\/\/([^\/]+)/i, 'flipkart://dl');
+    } else {
+      appUrl = 'com.amazon.mobile.shopping.web://' + url.replace(/^https?:\/\//i, '');
+    }
+
+    const startTime = Date.now();
+    window.location.href = appUrl;
+
+    setTimeout(function() {
+      // If user remained in current window after 1.2s (app did not open or not installed), navigate to web URL
+      if (Date.now() - startTime < 1800) {
+        window.location.href = url;
+      }
+    }, 1200);
+    return;
+  }
+
+  // Desktop or standard fallback: Open in new browser tab
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+function handleSmartStoreClick(e, rawUrl, platform) {
+  if (e && (e.ctrlKey || e.metaKey || e.shiftKey || e.which === 2)) return;
+  const ua = navigator.userAgent || '';
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(ua);
+  if (!isMobile) return; // Keep default browser behavior on desktop
+
+  if (e && e.preventDefault) e.preventDefault();
+  openStoreLink(rawUrl, platform);
+}
+
+function checkInAppBrowser() {
+  try {
+    const ua = navigator.userAgent || '';
+    const isWhatsApp = /WhatsApp/i.test(ua);
+    const isInApp = isWhatsApp || /FBAN|FBAV|Instagram|Line|musical_ly/i.test(ua);
+    if (isInApp) {
+      const banner = document.getElementById('in-app-browser-banner');
+      if (banner) banner.style.display = 'flex';
+    }
+  } catch(e) {}
+}
+
 function quickAudit(asin) {
   document.getElementById('audit-input').value = asin;
   runAudit();
@@ -1371,7 +1462,7 @@ async function runAudit(competitorUrl = '') {
                 ${d.mrp_mismatch_msg || `Caution: The compared store's packaging MRP differs substantially from this item. This usually indicates a different storage variant, weight size (e.g. 50g vs 100g), or combo pack rather than an exact match.`}
               </div>
               ${(d.flipkart_search_url || d.amazon_search_url) ? `
-                <a href="${d.flipkart_search_url || d.amazon_search_url}" target="_blank" rel="nofollow noopener sponsored" class="mrp-mismatch-action">
+                <a href="${d.flipkart_search_url || d.amazon_search_url}" onclick="handleSmartStoreClick(event, this.href, '${isPrimaryAmazon ? 'flipkart' : 'amazon'}')" target="_blank" rel="nofollow noopener sponsored" class="mrp-mismatch-action">
                   🔍 Search exact matching variant on ${isPrimaryAmazon ? 'Flipkart' : 'Amazon'} ↗
                 </a>
               ` : ''}
@@ -1399,7 +1490,7 @@ async function runAudit(competitorUrl = '') {
               <div style="font-size:.74rem;color:var(--muted)">
                 💵 You Save: <strong style="color:var(--green)">₹${amz.savings.toLocaleString('en-IN')}</strong> vs Packaging MRP
               </div>
-              <a href="${amz.url || d.affiliate_url}" target="_blank" rel="nofollow noopener sponsored" class="btn-store-buy amazon">
+              <a href="${amz.url || d.affiliate_url}" onclick="handleSmartStoreClick(event, this.href, 'amazon')" target="_blank" rel="nofollow noopener sponsored" class="btn-store-buy amazon">
                 Buy on Amazon at ₹${amz.price.toLocaleString('en-IN')} ↗
               </a>
             ` : `
@@ -1407,7 +1498,7 @@ async function runAudit(competitorUrl = '') {
                 <div style="color:#fbbf24;font-weight:800;font-size:.9rem;margin-bottom:6px">⚠️ Exact Match Was Not Found on Amazon</div>
                 <div>We could not confirm the exact same model & Box MRP automatically. To avoid showing a wrong item, tap below to check live Amazon search results or paste the exact Amazon link if you have one:</div>
               </div>
-              <a href="${d.amazon_search_url || amz.url || 'https://www.amazon.in'}" target="_blank" rel="nofollow noopener sponsored" class="btn-store-buy amazon" style="margin-bottom:10px">
+              <a href="${d.amazon_search_url || amz.url || 'https://www.amazon.in'}" onclick="handleSmartStoreClick(event, this.href, 'amazon')" target="_blank" rel="nofollow noopener sponsored" class="btn-store-buy amazon" style="margin-bottom:10px">
                 🔍 Tap to View Live Amazon Search Results ↗
               </a>
               <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;width:100%">
@@ -1435,7 +1526,7 @@ async function runAudit(competitorUrl = '') {
               <div style="font-size:.74rem;color:var(--muted)">
                 💵 You Save: <strong style="color:var(--green)">₹${fk.savings.toLocaleString('en-IN')}</strong> vs Packaging MRP
               </div>
-              <a href="${toFlipkartAffiliateUrl(fk.url || d.flipkart_search_url)}" target="_blank" rel="nofollow noopener sponsored" class="btn-store-buy flipkart">
+              <a href="${toFlipkartAffiliateUrl(fk.url || d.flipkart_search_url)}" onclick="handleSmartStoreClick(event, this.href, 'flipkart')" target="_blank" rel="nofollow noopener sponsored" class="btn-store-buy flipkart">
                 Buy on Flipkart at ₹${fk.price.toLocaleString('en-IN')} ↗
               </a>
             ` : `
@@ -1443,7 +1534,7 @@ async function runAudit(competitorUrl = '') {
                 <div style="color:#fbbf24;font-weight:800;font-size:.9rem;margin-bottom:6px">⚠️ Exact Match Was Not Found on Flipkart</div>
                 <div>We could not confirm the exact same model & Box MRP automatically. To avoid showing a wrong item, tap below to check live Flipkart search results or paste the exact Flipkart link if you have one:</div>
               </div>
-              <a href="${toFlipkartAffiliateUrl(d.flipkart_search_url || fk.url || 'https://www.flipkart.com')}" target="_blank" rel="nofollow noopener sponsored" class="btn-store-buy flipkart" style="margin-bottom:10px">
+              <a href="${toFlipkartAffiliateUrl(d.flipkart_search_url || fk.url || 'https://www.flipkart.com')}" onclick="handleSmartStoreClick(event, this.href, 'flipkart')" target="_blank" rel="nofollow noopener sponsored" class="btn-store-buy flipkart" style="margin-bottom:10px">
                 🔍 Tap to View Live Flipkart Search Results ↗
               </a>
               <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;width:100%">
@@ -1533,7 +1624,7 @@ async function runAudit(competitorUrl = '') {
               ⚖️ ${hasComparison ? 'Re-Compare with Different Competitor' : `Compare with ${isPrimaryAmazon ? 'Flipkart' : 'Amazon'}`}
             </span>
             ${(d.flipkart_search_url || d.amazon_search_url) ? `
-              <a href="${isPrimaryAmazon ? toFlipkartAffiliateUrl(d.flipkart_search_url) : d.amazon_search_url}" target="_blank" rel="nofollow noopener sponsored" class="btn-browse-store">
+              <a href="${isPrimaryAmazon ? toFlipkartAffiliateUrl(d.flipkart_search_url) : d.amazon_search_url}" onclick="handleSmartStoreClick(event, this.href, '${isPrimaryAmazon ? 'flipkart' : 'amazon'}')" target="_blank" rel="nofollow noopener sponsored" class="btn-browse-store">
                 🔍 Search "${d.search_term || 'this item'}" on ${isPrimaryAmazon ? 'Flipkart' : 'Amazon'} ↗
               </a>
             ` : ''}
@@ -2534,6 +2625,7 @@ async function loadTrendingComparisons() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
+  checkInAppBrowser();
   const curTheme = localStorage.getItem('verifyfirst_theme') || 'midnight';
   setTheme(curTheme);
   const curLang = localStorage.getItem('verifyfirst_lang') || 'en';
