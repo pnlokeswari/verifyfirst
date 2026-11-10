@@ -990,11 +990,13 @@ const STORES = {
     name: 'AJIO',
     emoji: '👗',
     makeLink: (url) => {
-      const encoded = encodeURIComponent(url);
-      return `https://trackingv3.linkredirect.in/visitretailer/4249?id=5518844&dl=${encoded}`;
+      // Clean query strings or trailing question marks
+      const cleanUrl = url.split('?')[0];
+      const encoded = encodeURIComponent(cleanUrl);
+      return `https://trackingv3.linkredirect.in/visitretailer/3178?id=5518844&dl=${encoded}`;
     },
-    detect: (url) => /ajio\.com/i.test(url),
-    homepage: 'https://trackingv3.linkredirect.in/visitretailer/4249?id=5518844&dl=https%3A%2F%2Fwww.ajio.com%2F'
+    detect: (url) => /ajio\.com|ajiio\.in/i.test(url),
+    homepage: 'https://trackingv3.linkredirect.in/visitretailer/3178?id=5518844&dl=https%3A%2F%2Fwww.ajio.com%2F'
   },
   myntra: {
     name: 'Myntra',
