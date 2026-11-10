@@ -1012,11 +1012,12 @@ const STORES = {
     name: 'Truemeds',
     emoji: '💊',
     makeLink: (url) => {
-      const encoded = encodeURIComponent(url);
-      return `https://trackingv3.linkredirect.in/visitretailer/5094?id=5518844&dl=${encoded}`;
+      const cleanUrl = url.split('?')[0];
+      const encoded = encodeURIComponent(cleanUrl);
+      return `https://trackingv3.linkredirect.in/visitretailer/2512?id=5518844&dl=${encoded}`;
     },
     detect: (url) => /truemeds\.in|truemeds\.com/i.test(url),
-    homepage: 'https://trackingv3.linkredirect.in/visitretailer/5094?id=5518844&dl=https%3A%2F%2Fwww.truemeds.in%2F'
+    homepage: 'https://trackingv3.linkredirect.in/visitretailer/2512?id=5518844&dl=https%3A%2F%2Fwww.truemeds.in%2F'
   },
   netmeds: {
     name: 'Netmeds',
