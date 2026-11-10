@@ -382,6 +382,167 @@
     font-weight: 700;
   }
 
+
+  /* ── FIVE-STAGE STATUS BADGES ── */
+  .status-pending-review  { background: rgba(245,158,11,0.15);  color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+  .status-tracked         { background: rgba(56,189,248,0.15);  color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); }
+  .status-not-tracked     { background: rgba(239,68,68,0.15);   color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+  .status-delivery-confirmed { background: rgba(167,139,250,0.15); color: #a78bfa; border: 1px solid rgba(167,139,250,0.3); }
+  .status-payment-released   { background: rgba(16,185,129,0.15);  color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+
+  /* ── STAGE TRACKER TIMELINE ── */
+  .stage-tracker {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 6px 0 10px 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  .stage-dot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 48px;
+  }
+  .stage-dot-circle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 900;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .stage-dot-circle.done   { background: #10b981; border-color: #10b981; color: #fff; }
+  .stage-dot-circle.active { background: #0284c7; border-color: #38bdf8; color: #fff; }
+  .stage-dot-circle.failed { background: #ef4444; border-color: #f87171; color: #fff; }
+  .stage-dot-label {
+    font-size: 0.55rem;
+    color: var(--muted);
+    text-align: center;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    font-weight: 700;
+  }
+  .stage-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    min-width: 10px;
+    max-width: 30px;
+    margin-bottom: 14px;
+  }
+  .stage-line.done { background: #10b981; }
+
+  /* ── CONFIRM DELIVERY BUTTON ── */
+  .btn-confirm-delivery {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .btn-confirm-delivery:hover { background: linear-gradient(135deg, #6d28d9, #4c1d95); }
+  .btn-confirm-delivery:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── DELIVERY DECLARATION MODAL OVERLAY ── */
+  .delivery-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .delivery-modal-overlay.open { display: flex; }
+  .delivery-modal {
+    background: #0f1c35;
+    border: 1px solid rgba(167,139,250,0.4);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 400px;
+    width: 100%;
+    text-align: left;
+  }
+  .delivery-modal h3 { font-size: 1rem; font-weight: 800; color: #a78bfa; margin-bottom: 10px; }
+  .delivery-modal p  { font-size: 0.82rem; color: #cbd5e1; margin-bottom: 14px; line-height: 1.5; }
+  .delivery-modal label { display: flex; align-items: flex-start; gap: 10px; font-size: 0.8rem; color: #e2e8f0; cursor: pointer; margin-bottom: 16px; }
+  .delivery-modal input[type=checkbox] { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; accent-color: #7c3aed; }
+  .modal-btn-row { display: flex; gap: 10px; }
+  .btn-modal-confirm {
+    flex: 1;
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.84rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .btn-modal-cancel {
+    flex: 1;
+    background: rgba(255,255,255,0.07);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 0.84rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* ── PAYMENT COUNTDOWN CHIP ── */
+  .payment-countdown-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(167,139,250,0.12);
+    border: 1px solid rgba(167,139,250,0.3);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #a78bfa;
+    margin-top: 6px;
+  }
+
+  /* ── STAGE LEGEND ── */
+  .stage-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-size: 0.75rem;
+  }
+  .stage-legend-title { font-weight: 800; color: #cbd5e1; margin-bottom: 4px; font-size: 0.78rem; }
+  .stage-legend-row { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+  .slr-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
   .converter-error {
     color: #f87171;
     font-size: 0.84rem;
@@ -1022,9 +1183,18 @@
 
     <!-- PANE 2: STATUS & EARNINGS CHECKER -->
     <div class="portal-pane" id="pane-status">
-      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px;text-align:left;">
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px;text-align:left;">
         Enter your Partner Roll Number to check verified order statuses, confirmed profit shares, and UPI payment transfers.
       </p>
+      <div class="stage-legend">
+        <div class="stage-legend-title">📋 Order Stage Guide</div>
+        <div class="stage-legend-row"><span class="slr-dot" style="background:#fbbf24;"></span> <strong>Pending Tracking Review</strong> — Order logged, admin verifying with merchant.</div>
+        <div class="stage-legend-row"><span class="slr-dot" style="background:#38bdf8;"></span> <strong>Profit Tracked</strong> — Merchant confirmed tracking. Awaiting your delivery confirmation.</div>
+        <div class="stage-legend-row"><span class="slr-dot" style="background:#f87171;"></span> <strong>Profit Not Tracked</strong> — Tracking failed. Admin will investigate.</div>
+        <div class="stage-legend-row"><span class="slr-dot" style="background:#a78bfa;"></span> <strong>Delivery Confirmed</strong> — Delivery confirmed. Payment releasing in 2 days.</div>
+        <div class="stage-legend-row"><span class="slr-dot" style="background:#34d399;"></span> <strong>Payment Released</strong> — UPI payment sent. Check reference below.</div>
+      </div>
+
       <div style="display:flex;gap:8px;margin-bottom:16px;">
         <input type="text" id="status-roll-input" class="form-control" placeholder="Enter Roll Number (e.g. VF-101)" style="flex:1;">
         <button class="btn-check-status" onclick="fetchPartnerOrders()" style="width:auto;margin:0;padding:10px 20px;">
@@ -1548,33 +1718,157 @@ async function fetchPartnerOrders() {
     }
   }
 
+  // ── FIVE-STAGE STATUS RESOLVER ──
+  function resolveStage(statusText) {
+    const s = (statusText || '').toLowerCase();
+    if (s.includes('payment released') || s.includes('paid'))
+      return { stage: 5, badgeClass: 'status-payment-released', label: '✅ Payment Released' };
+    if (s.includes('delivery confirmed'))
+      return { stage: 4, badgeClass: 'status-delivery-confirmed', label: '📦 Delivery Confirmed – Pay in 2 Days' };
+    if (s.includes('not tracked') || s.includes('not applicable'))
+      return { stage: 3, badgeClass: 'status-not-tracked', label: '❌ Profit Not Tracked' };
+    if (s.includes('profit tracked') || s.includes('tracked'))
+      return { stage: 2, badgeClass: 'status-tracked', label: '📡 Profit Tracked – Confirm Delivery' };
+    // Default: Stage 1
+    return { stage: 1, badgeClass: 'status-pending-review', label: '⏳ Pending Tracking Review' };
+  }
+
+  function buildStageTracker(stage, failed) {
+    const stages = ['Logged', 'Tracked', 'Delivery', 'Payment'];
+    let html = '<div class="stage-tracker">';
+    for (let i = 0; i < stages.length; i++) {
+      let cls = '';
+      if (failed && i === 1) cls = 'failed';
+      else if (i + 1 < stage) cls = 'done';
+      else if (i + 1 === stage) cls = 'active';
+      html += `<div class="stage-dot">
+        <div class="stage-dot-circle ${cls}">${cls === 'done' ? '✓' : (i + 1)}</div>
+        <div class="stage-dot-label">${stages[i]}</div>
+      </div>`;
+      if (i < stages.length - 1) {
+        html += `<div class="stage-line ${i + 1 < stage && !failed ? 'done' : ''}"></div>`;
+      }
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function getPaymentCountdown(deliveryConfirmedDate) {
+    if (!deliveryConfirmedDate || deliveryConfirmedDate === '-') return '';
+    const confirmed = new Date(deliveryConfirmedDate);
+    if (isNaN(confirmed.getTime())) return '';
+    const paymentDate = new Date(confirmed.getTime() + 2 * 24 * 60 * 60 * 1000);
+    const now = new Date();
+    const diffMs = paymentDate - now;
+    if (diffMs <= 0) return '<span class="payment-countdown-chip">🕐 Due for payment now</span>';
+    const diffHrs = Math.ceil(diffMs / (1000 * 60 * 60));
+    if (diffHrs <= 48) return `<span class="payment-countdown-chip">🕐 Payment due in ~${diffHrs} hrs</span>`;
+    return '';
+  }
+
   // Render cards
+  const currentRollNo = (document.getElementById('status-roll-input').value || '').trim().toUpperCase();
   listContainer.innerHTML = orders.map(ord => {
-    let badgeClass = 'status-pending';
-    let statusText = ord.status || 'Pending Verification';
-    if (statusText.toLowerCase().includes('confirm')) badgeClass = 'status-confirmed';
-    if (statusText.toLowerCase().includes('paid')) badgeClass = 'status-paid';
-    if (statusText.toLowerCase().includes('cancel')) badgeClass = 'status-cancelled';
+    const { stage, badgeClass, label } = resolveStage(ord.status);
+    const isFailed = (ord.status || '').toLowerCase().includes('not tracked');
+    const tracker = buildStageTracker(stage, isFailed);
 
     const cleanLoggedDate = formatDisplayDate(ord.date) || 'Recent';
-    const cleanPaidDate = formatDisplayDate(ord.paid_date);
-    const paidDateLabel = cleanPaidDate ? ` on ${cleanPaidDate}` : '';
+    const cleanPaidDate   = formatDisplayDate(ord.paid_date);
+    const paidDateLabel   = cleanPaidDate ? ` on ${cleanPaidDate}` : '';
+    const countdownChip   = stage === 4 ? getPaymentCountdown(ord.delivery_confirmed_date) : '';
+
+    // Show "Confirm Delivery" button only on Stage 2 (Profit Tracked)
+    const showConfirmBtn = stage === 2;
+    const confirmBtnHtml = showConfirmBtn ? `
+      <button class="btn-confirm-delivery"
+        onclick="openDeliveryModal('${(ord.order_id||'').replace(/'/g,"\'")}', '${currentRollNo}')">
+        📦 Confirm Delivered &amp; Not Returned
+      </button>` : '';
+
+    // Payment ref line
+    const payRefLine = (stage === 5 && ord.payment_ref && ord.payment_ref !== '-')
+      ? `<p style="color:#34d399;font-weight:700;margin-top:4px;">💸 UPI Ref: ${ord.payment_ref}${paidDateLabel}</p>` : '';
+
+    // Profit share line
+    const profitLine = (ord.partner_share && ord.partner_share !== 'TBD' && stage >= 2)
+      ? `• Profit Share: ₹${ord.partner_share}` : '';
 
     return `
-      <div class="history-item">
-        <div class="history-left">
-          <h4>${ord.store || 'Order'} · <span style="font-family:monospace;color:#38bdf8;">${ord.order_id}</span></h4>
-          <p>Logged: ${cleanLoggedDate} ${ord.partner_share && ord.partner_share !== 'TBD' ? '• Profit Share: ₹' + ord.partner_share : ''}</p>
-          ${ord.payment_ref && ord.payment_ref !== '-' ? `<p style="color:#34d399;font-weight:700;">Ref: ${ord.payment_ref}${paidDateLabel}</p>` : ''}
+      <div class="history-item" style="flex-direction:column;align-items:flex-start;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;flex-wrap:wrap;gap:6px;">
+          <div class="history-left">
+            <h4>${ord.store || 'Order'} · <span style="font-family:monospace;color:#38bdf8;">${ord.order_id}</span></h4>
+            <p>Logged: ${cleanLoggedDate} ${profitLine}</p>
+            ${payRefLine}
+            ${countdownChip}
+          </div>
+          <span class="status-badge ${badgeClass}">${label}</span>
         </div>
-        <div>
-          <span class="status-badge ${badgeClass}">${statusText}</span>
-        </div>
+        ${tracker}
+        ${confirmBtnHtml}
       </div>
     `;
   }).join('');
 
   resultDiv.style.display = 'block';
+}
+
+// ── DELIVERY MODAL HELPERS ──
+let _pendingDeliveryOrderId = null;
+let _pendingDeliveryRollNo  = null;
+
+function openDeliveryModal(orderId, rollNo) {
+  _pendingDeliveryOrderId = orderId;
+  _pendingDeliveryRollNo  = rollNo;
+  document.getElementById('delivery-declare-check').checked = false;
+  document.getElementById('delivery-modal-status').style.display = 'none';
+  document.getElementById('delivery-modal-overlay').classList.add('open');
+}
+
+function closeDeliveryModal() {
+  document.getElementById('delivery-modal-overlay').classList.remove('open');
+  _pendingDeliveryOrderId = null;
+  _pendingDeliveryRollNo  = null;
+}
+
+async function submitDeliveryConfirmation() {
+  const checkbox = document.getElementById('delivery-declare-check');
+  const statusEl = document.getElementById('delivery-modal-status');
+  if (!checkbox.checked) {
+    statusEl.style.color = '#f87171';
+    statusEl.textContent = '⚠️ Please tick the declaration checkbox to confirm.';
+    statusEl.style.display = 'block';
+    return;
+  }
+  statusEl.style.color = '#fbbf24';
+  statusEl.textContent = '⏳ Submitting delivery confirmation…';
+  statusEl.style.display = 'block';
+
+  try {
+    const payload = {
+      action: 'confirm_delivery',
+      roll_no: _pendingDeliveryRollNo,
+      order_id: _pendingDeliveryOrderId
+    };
+    if (GOOGLE_SCRIPT_WEBAPP_URL && !GOOGLE_SCRIPT_WEBAPP_URL.includes('placeholder')) {
+      await fetch(GOOGLE_SCRIPT_WEBAPP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+    }
+    statusEl.style.color = '#34d399';
+    statusEl.textContent = '✅ Delivery confirmed! Payment will be processed within 2 working days.';
+    setTimeout(() => {
+      closeDeliveryModal();
+      // Auto-refresh status view
+      fetchPartnerOrders();
+    }, 2000);
+  } catch (err) {
+    statusEl.style.color = '#f87171';
+    statusEl.textContent = '❌ Submission failed. Please try again.';
+  }
 }
 
 // Auto-fill roll number from storage on page load
@@ -1637,6 +1931,25 @@ window.addEventListener('scroll', function() {
   } catch(e) {}
 })();
 </script>
+
+
+  <!-- ── DELIVERY CONFIRMATION MODAL ── -->
+  <div class="delivery-modal-overlay" id="delivery-modal-overlay">
+    <div class="delivery-modal">
+      <h3>📦 Confirm Delivery & No Return</h3>
+      <p>You are confirming that the customer has <strong>received the product</strong> and <strong>has not raised any return or exchange request</strong>.<br><br>
+      Upon confirmation, payment will be processed within <strong>2 working days</strong>.</p>
+      <label>
+        <input type="checkbox" id="delivery-declare-check">
+        <span>I confirm that the product was delivered to the customer and no return/exchange has been requested. I take full responsibility for this declaration.</span>
+      </label>
+      <div class="modal-btn-row">
+        <button class="btn-modal-cancel" onclick="closeDeliveryModal()">✕ Cancel</button>
+        <button class="btn-modal-confirm" onclick="submitDeliveryConfirmation()">✅ Confirm Delivery</button>
+      </div>
+      <div id="delivery-modal-status" style="margin-top:12px;font-size:0.78rem;display:none;"></div>
+    </div>
+  </div>
 
 </body>
 </html>
