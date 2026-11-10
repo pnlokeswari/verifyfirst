@@ -968,20 +968,11 @@ const STORES = {
     name: 'Flipkart',
     emoji: '🛒',
     makeLink: (url) => {
-      try {
-        if (/dl\.flipkart\.com|fkrt\.it/i.test(url)) {
-          const encoded = encodeURIComponent(url);
-          return `https://trackingv3.linkredirect.in/visitretailer/2276?id=5518844&dl=${encoded}`;
-        }
-        const u = new URL(url);
-        u.searchParams.set('affid', 'rohanpouri');
-        u.searchParams.set('affExtParam2', '5518844');
-        u.searchParams.set('ov_redirect', 'true');
-        return u.toString();
-      } catch(e) {
-        const encoded = encodeURIComponent(url);
-        return `https://trackingv3.linkredirect.in/visitretailer/2276?id=5518844&dl=${encoded}`;
-      }
+      // Direct Flipkart URL with EarnKaro affiliate parameters
+      // This directly triggers Android App Links / Universal Links into the native Flipkart App!
+      const cleanUrl = url.trim();
+      const sep = cleanUrl.includes('?') ? '&' : '?';
+      return `${cleanUrl}${sep}ov_redirect=true&affid=rohanpouri&affExtParam2=5518844`;
     },
     detect: (url) => /flipkart\.com|fkrt\.it|dl\.flipkart\.com/i.test(url),
     homepage: 'https://www.flipkart.com/?affid=rohanpouri&affExtParam2=5518844&ov_redirect=true'
