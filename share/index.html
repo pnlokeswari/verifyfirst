@@ -1022,11 +1022,12 @@ const STORES = {
     name: 'Netmeds',
     emoji: '🏥',
     makeLink: (url) => {
-      const encoded = encodeURIComponent(url);
-      return `https://trackingv3.linkredirect.in/visitretailer/2965?id=5518844&dl=${encoded}`;
+      const cleanUrl = url.split('?')[0];
+      const encoded = encodeURIComponent(cleanUrl);
+      return `https://trackingv3.linkredirect.in/visitretailer/2484?id=5518844&dl=${encoded}`;
     },
-    detect: (url) => /netmeds\.com/i.test(url),
-    homepage: 'https://trackingv3.linkredirect.in/visitretailer/2965?id=5518844&dl=https%3A%2F%2Fwww.netmeds.com%2F'
+    detect: (url) => /netmeds\.com|bitli\.in/i.test(url),
+    homepage: 'https://trackingv3.linkredirect.in/visitretailer/2484?id=5518844&dl=https%3A%2F%2Fwww.netmeds.com%2F'
   }
 };
 
