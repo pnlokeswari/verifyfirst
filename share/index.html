@@ -752,7 +752,7 @@
     </div>
     <div class="converter-result" id="converter-result">
       <div class="store-detected-badge" id="detected-store">✅ Store Detected</div>
-      <a href="#" id="affiliate-link-btn" class="btn-open-buy" target="_blank" rel="noopener noreferrer">
+      <a href="#" id="affiliate-link-btn" class="btn-open-buy" onclick="handleStoreRedirect(event, this.href)">
         🛍️ Open &amp; Buy (Community Supported)
       </a>
     </div>
@@ -1032,6 +1032,21 @@ const STORES = {
   }
 };
 
+// Smart redirect to prefer installed native mobile app (App Links / Android App Handlers)
+function handleStoreRedirect(e, targetUrl) {
+  if (e) e.preventDefault();
+  if (!targetUrl || targetUrl === '#' || targetUrl.startsWith('javascript:')) return;
+
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (isMobile) {
+    // Navigate in same frame so Android/iOS can intercept via App Links / Universal Links
+    window.location.href = targetUrl;
+  } else {
+    // Desktop: open cleanly in a new tab
+    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+  }
+}
+
 function openStore(storeKey) {
   const store = STORES[storeKey];
   if (!store) return;
@@ -1041,7 +1056,7 @@ function openStore(storeKey) {
       link_type: 'homepage_tile'
     });
   }
-  window.open(store.homepage, '_blank', 'noopener,noreferrer');
+  handleStoreRedirect(null, store.homepage);
 }
 
 function convertLink() {
