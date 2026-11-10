@@ -55,6 +55,14 @@
       "mainEntity": [
         {
           "@type": "Question",
+          "name": "Do additional items added to the cart also generate partner profit?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. E-commerce platforms track the full shopping basket within the active session. For 100% accurate tracking, ensure the customer's cart is empty before clicking the link, or open the link first before adding products. All additional qualifying items added and purchased in that session generate additional partner profit."
+          }
+        },
+        {
+          "@type": "Question",
           "name": "Does using this assisted shopping hub increase product prices?",
           "acceptedAnswer": {
             "@type": "Answer",
@@ -335,6 +343,45 @@
     box-shadow: 0 4px 20px rgba(16,185,129,0.35);
   }
   .btn-open-buy:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(16,185,129,0.5); }
+    .cart-guidance-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(14, 165, 233, 0.08);
+    border: 1px solid rgba(14, 165, 233, 0.25);
+    border-left: 4px solid #38bdf8;
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 16px;
+    text-align: left;
+  }
+  .cart-guidance-tip .tip-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .cart-guidance-tip .tip-content {
+    font-size: 0.82rem;
+    color: #e2e8f0;
+    line-height: 1.45;
+  }
+  .cart-guidance-tip .tip-content strong {
+    color: #38bdf8;
+    font-size: 0.84rem;
+    display: block;
+    margin-bottom: 3px;
+  }
+  .cart-guidance-tip .tip-content p {
+    margin: 0;
+    color: #cbd5e1;
+  }
+  .cart-guidance-tip .tip-content em {
+    color: #34d399;
+    font-style: normal;
+    font-weight: 700;
+  }
+
   .converter-error {
     color: #f87171;
     font-size: 0.84rem;
@@ -898,6 +945,13 @@
     <div class="converter-error" id="converter-error">
       ⚠️ Could not detect the store from this link. Please paste a link from Amazon, Flipkart, AJIO, Myntra, Truemeds, or Netmeds.
     </div>
+    <div class="cart-guidance-tip">
+      <div class="tip-icon">🛒</div>
+      <div class="tip-content">
+        <strong>Basket Maximizer Tip (For Customers &amp; Storekeepers):</strong>
+        <p>Make sure the cart is <strong>empty before clicking the link</strong>, or click the link <em>first</em> before adding items. Once opened through your link, <strong>all additional products</strong> added to the basket during that shopping session are tracked for partner profit share!</p>
+      </div>
+    </div>
   </div>
 
   <!-- ─────────── PARTNER ORDER INTIMATION & STATUS PORTAL ─────────── -->
@@ -914,6 +968,13 @@
 
     <!-- PANE 1: ORDER INTIMATION FORM -->
     <div class="portal-pane active" id="pane-intimate">
+      <div class="cart-guidance-tip" style="margin-top:0;margin-bottom:14px;background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.25);border-left-color:#10b981;">
+        <div class="tip-icon">💡</div>
+        <div class="tip-content">
+          <strong style="color:#10b981;">Full-Cart Profit Advice:</strong>
+          <p>Always ask customers to open the store through your converted link <strong>before adding items to their cart</strong> (or empty any previously saved cart items first). Every extra item they purchase in that session multiplies your profit payout!</p>
+        </div>
+      </div>
       <p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px;text-align:left;">
         Assisted an offline customer with an order? Enter the details below to log it into your partner ledger for profit verification.
       </p>
