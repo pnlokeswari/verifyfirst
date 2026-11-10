@@ -1459,6 +1459,18 @@ async function fetchPartnerOrders() {
   document.getElementById('stat-total-paid').textContent = '₹' + Number(totalPaid).toLocaleString('en-IN');
   document.getElementById('stat-pending-payout').textContent = '₹' + Number(totalEarnings - totalPaid).toLocaleString('en-IN');
 
+  // Format raw dates (e.g. 2026-11-09T18:30:00.000Z) into clean DD/MM/YYYY
+  function formatDisplayDate(rawDate) {
+    if (!rawDate || rawDate === '-' || rawDate === 'null') return '';
+    const dStr = String(rawDate);
+    const datePart = dStr.includes('T') ? dStr.split('T')[0] : dStr.trim();
+    if (datePart.includes('-')) {
+      const p = datePart.split('-');
+      if (p.length === 3) return `${p[2]}/${p[1]}/${p[0]}`;
+    }
+    return datePart;
+  }
+
   // Render cards
   listContainer.innerHTML = orders.map(ord => {
     let badgeClass = 'status-pending';
@@ -1467,12 +1479,16 @@ async function fetchPartnerOrders() {
     if (statusText.toLowerCase().includes('paid')) badgeClass = 'status-paid';
     if (statusText.toLowerCase().includes('cancel')) badgeClass = 'status-cancelled';
 
+    const cleanLoggedDate = formatDisplayDate(ord.date) || 'Recent';
+    const cleanPaidDate = formatDisplayDate(ord.paid_date);
+    const paidDateLabel = cleanPaidDate ? ` on ${cleanPaidDate}` : '';
+
     return `
       <div class="history-item">
         <div class="history-left">
           <h4>${ord.store || 'Order'} · <span style="font-family:monospace;color:#38bdf8;">${ord.order_id}</span></h4>
-          <p>Logged: ${ord.date || 'Recent'} ${ord.partner_share ? '• Est. Share: ' + ord.partner_share : ''}</p>
-          ${ord.payment_ref && ord.payment_ref !== '-' ? `<p style="color:#34d399;font-weight:700;">Ref: ${ord.payment_ref} ${ord.paid_date ? '(' + ord.paid_date + ')' : ''}</p>` : ''}
+          <p>Logged: ${cleanLoggedDate} ${ord.partner_share && ord.partner_share !== 'TBD' ? '• Profit Share: ₹' + ord.partner_share : ''}</p>
+          ${ord.payment_ref && ord.payment_ref !== '-' ? `<p style="color:#34d399;font-weight:700;">Ref: ${ord.payment_ref}${paidDateLabel}</p>` : ''}
         </div>
         <div>
           <span class="status-badge ${badgeClass}">${statusText}</span>
