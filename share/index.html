@@ -1459,16 +1459,32 @@ async function fetchPartnerOrders() {
   document.getElementById('stat-total-paid').textContent = '₹' + Number(totalPaid).toLocaleString('en-IN');
   document.getElementById('stat-pending-payout').textContent = '₹' + Number(totalEarnings - totalPaid).toLocaleString('en-IN');
 
-  // Format raw dates (e.g. 2026-11-09T18:30:00.000Z) into clean DD/MM/YYYY
+  // Format raw dates (e.g. 2026-11-09T18:30:00.000Z UTC) into Indian Standard Time (IST) DD/MM/YYYY
   function formatDisplayDate(rawDate) {
     if (!rawDate || rawDate === '-' || rawDate === 'null') return '';
-    const dStr = String(rawDate);
-    const datePart = dStr.includes('T') ? dStr.split('T')[0] : dStr.trim();
-    if (datePart.includes('-')) {
-      const p = datePart.split('-');
-      if (p.length === 3) return `${p[2]}/${p[1]}/${p[0]}`;
+    try {
+      const dStr = String(rawDate).trim();
+      // If it contains an ISO UTC timestamp (like ...T...Z) or a valid date string
+      const parsed = new Date(dStr);
+      if (!isNaN(parsed.getTime())) {
+        // Format to Indian locale date (DD/MM/YYYY) in Asia/Kolkata timezone
+        return parsed.toLocaleDateString('en-IN', {
+          timeZone: 'Asia/Kolkata',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      }
+      // Fallback manual parse if string is YYYY-MM-DD
+      const datePart = dStr.includes('T') ? dStr.split('T')[0] : dStr;
+      if (datePart.includes('-')) {
+        const p = datePart.split('-');
+        if (p.length === 3) return `${p[2]}/${p[1]}/${p[0]}`;
+      }
+      return datePart;
+    } catch (e) {
+      return String(rawDate);
     }
-    return datePart;
   }
 
   // Render cards
