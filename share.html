@@ -741,10 +741,10 @@
     <p class="converter-desc">Paste any product URL from Amazon, Flipkart, AJIO, Myntra, Truemeds, or Netmeds to generate a community-supported order link instantly:</p>
     <div class="converter-input-wrap">
       <input 
-        type="url" 
+        type="text" 
         id="link-input" 
         class="converter-input" 
-        placeholder="Paste product link here (amazon.in, flipkart.com, ajio.com, myntra.com...)"
+        placeholder="Paste product link or shared message here..."
         autocomplete="off"
         spellcheck="false"
       >
@@ -1054,16 +1054,21 @@ function convertLink() {
   resultDiv.style.display = 'none';
   errorDiv.style.display = 'none';
 
-  const rawUrl = (input.value || '').trim();
-  if (!rawUrl) {
-    errorDiv.textContent = '⚠️ Please paste a product link first!';
+  let rawText = (input.value || '').trim();
+  if (!rawText) {
+    errorDiv.textContent = '⚠️ Please paste a product link or shared message first!';
     errorDiv.style.display = 'block';
     return;
   }
 
+  // Auto-extract URL if user pasted the entire message copied from an app
+  // e.g. "Take a look at this Super Word Search 1 on Flipkart https://dl.flipkart.com/s/9f6CI2uuuN"
+  const urlMatch = rawText.match(/https?:\/\/[^\s]+/i);
+  const targetUrl = urlMatch ? urlMatch[0] : rawText;
+
   let matchedStore = null;
   for (const [key, store] of Object.entries(STORES)) {
-    if (store.detect(rawUrl)) {
+    if (store.detect(targetUrl)) {
       matchedStore = store;
       break;
     }
@@ -1075,7 +1080,7 @@ function convertLink() {
     return;
   }
 
-  const affiliateLink = matchedStore.makeLink(rawUrl);
+  const affiliateLink = matchedStore.makeLink(targetUrl);
 
   detectedBadge.textContent = `✅ ${matchedStore.emoji} ${matchedStore.name} Detected`;
   affiliateBtn.href = affiliateLink;
@@ -1085,7 +1090,7 @@ function convertLink() {
   if (typeof gtag === 'function') {
     gtag('event', 'affiliate_link_converted', {
       store_name: matchedStore.name,
-      original_url: rawUrl.slice(0, 100)
+      original_url: targetUrl.slice(0, 100)
     });
   }
 }
