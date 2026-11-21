@@ -1414,6 +1414,13 @@ const STORES = {
       const cleanUrl = url.trim();
       try {
         const u = new URL(cleanUrl);
+        if (/link\.amazon|amzlinks\.in/i.test(u.hostname)) {
+          // If already generated via Amazon Associates SiteStripe shortener, keep intact
+          if (!u.searchParams.has('tag')) {
+            u.searchParams.set('tag', '10fa9c-21');
+          }
+          return u.toString();
+        }
         if (/amzn\.(in|to)/i.test(u.hostname)) {
           u.searchParams.set('tag', '10fa9c-21');
           return u.toString();
@@ -1429,7 +1436,7 @@ const STORES = {
         return cleanUrl + sep + 'tag=10fa9c-21';
       }
     },
-    detect: (url) => /amazon\.in|amzn\.in|amzn\.to/i.test(url),
+    detect: (url) => /amazon\.(in|com)|amzn\.(in|to)|link\.amazon|amzlinks\.in/i.test(url),
     homepage: 'https://www.amazon.in/?tag=10fa9c-21'
   },
   shopsy: {
