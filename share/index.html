@@ -1411,11 +1411,26 @@ const STORES = {
     name: 'Amazon India',
     emoji: '📦',
     makeLink: (url) => {
-      const encoded = encodeURIComponent(url);
-      return `https://trackingv3.linkredirect.in/visitretailer/1100?id=5518844&dl=${encoded}`;
+      const cleanUrl = url.trim();
+      try {
+        const u = new URL(cleanUrl);
+        if (/amzn\.(in|to)/i.test(u.hostname)) {
+          u.searchParams.set('tag', '10fa9c-21');
+          return u.toString();
+        }
+        const asinMatch = u.pathname.match(/\/(?:dp|gp\/product)\/([A-Z0-9]{10})/i);
+        if (asinMatch && asinMatch[1]) {
+          return 'https://www.amazon.in/dp/' + asinMatch[1].toUpperCase() + '?tag=10fa9c-21';
+        }
+        u.searchParams.set('tag', '10fa9c-21');
+        return u.toString();
+      } catch (e) {
+        const sep = cleanUrl.includes('?') ? '&' : '?';
+        return cleanUrl + sep + 'tag=10fa9c-21';
+      }
     },
     detect: (url) => /amazon\.in|amzn\.in|amzn\.to/i.test(url),
-    homepage: 'https://trackingv3.linkredirect.in/visitretailer/1100?id=5518844&dl=https%3A%2F%2Fwww.amazon.in%2F'
+    homepage: 'https://www.amazon.in/?tag=10fa9c-21'
   },
   shopsy: {
     name: 'Shopsy',
