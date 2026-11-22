@@ -1914,12 +1914,40 @@ async function submitDeliveryConfirmation() {
   }
 }
 
-// Auto-fill roll number from storage on page load
+// Auto-fill roll number from storage on page load & handle WhatsApp Gateway Links
 document.addEventListener('DOMContentLoaded', function() {
   const savedRoll = localStorage.getItem('vf_partner_roll');
   if (savedRoll) {
     const rInput = document.getElementById('f-roll');
     if (rInput) rInput.value = savedRoll;
+  }
+
+  // Handle URL Query Parameters (WhatsApp Gateway: ?link=... or ?url=... or ?asin=...)
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const incomingLink = params.get('link') || params.get('url');
+    const incomingAsin = params.get('asin');
+
+    let target = '';
+    if (incomingAsin) {
+      target = `https://www.amazon.in/dp/${incomingAsin.trim().toUpperCase()}`;
+    } else if (incomingLink) {
+      target = incomingLink.trim();
+    }
+
+    if (target) {
+      const linkInput = document.getElementById('link-input');
+      if (linkInput) {
+        linkInput.value = target;
+        convertLink();
+        const convSection = document.getElementById('link-converter-section') || document.querySelector('.converter-box');
+        if (convSection) {
+          convSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('URL parameter auto-convert error:', err);
   }
 });
 
